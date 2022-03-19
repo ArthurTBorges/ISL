@@ -1,0 +1,40 @@
+`include "maquina_estados.v"
+
+module maquina_tb()
+
+  reg [6:0] entrada;
+  reg clk, res, ctrl;
+  wire [3:0] saida;
+  reg [3:0] estado;
+
+  maquina G1(entrada, clk, res, ctrl, saida);
+
+  initial begin
+    $dumpfile("maquina_estados_tb.vcd");
+     $dumpvars(0, maquina_estados_tb);
+     $monitor("saida = %b", saida);
+     
+     //estimulos:
+     res = 0; ctrl = 0; entrada = 0010000; #100;
+     res = 0; ctrl = 1; entrada = 0010000; #100; //passa pro 1
+     res = 0; ctrl = 1; entrada = 0100100; #100; //passa pro 2
+     res = 0; ctrl = 0; entrada = 0100100; #100;
+     res = 0; ctrl = 1; entrada = 0000010; #100; //passa pro 3
+     res = 0; ctrl = 0; entrada = 0000010; #100;
+     res = 0; ctrl = 1; entrada = 1000111; #100; //passa pro 4
+     res = 0; ctrl = 0; entrada = 1000111; #100; 
+     res = 0; ctrl = 1; entrada = 0111010; #100; //passa pro 5
+     res = 0; ctrl = 0; entrada = 0111010; #100;
+     res = 0; ctrl = 1; entrada = 1111111; #100; //passa pro hora/c8
+
+     res = 1; ctrl = 0; entrada = 0000000; #100; //reseta e volta pro inicio
+     res = 0; ctrl = 1; entrada = 1111111; #100; //passa do inic pro 5
+     res = 0; ctrl = 1; entrada = 0101001; #100; //vai do 5 para mensagem falsa/c7
+
+     res = 1; ctrl = 0; entrada = 0000000; #100; //reseta novamente
+     res = 0; ctrl = 1; entrada = 0100100; #100; //vai do inicio até o 2
+     res = 0; ctrl = 0; entrada = 0100100; #100;
+     res = 0; ctrl = 1; entrada = 1111111; #100; //passa para o acao/c6
+  end
+
+endmodule
