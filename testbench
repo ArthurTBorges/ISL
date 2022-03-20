@@ -1,51 +1,49 @@
-`include "maquina_estados.v"
+`include "maq_est.v"
 
 module maquina_tb();
- 
- reg clk, res;
- reg [7:0]entrada;
- wire [3:0]saida;
- wire ax;
+    
+    reg [7:0]entra;
+    reg clk, rst;
+    wire [3:0]sai;
 
- maquina uut(clk, res, entrada, saida, ax);
+    maquina maquina_tb(entra,clk,rst,sai);
 
- initial begin
-    forever begin
-       clk = 0; clk = ~clk; #10;
+    initial begin
+        forever begin
+            clk = 0;
+            #100 clk = ~clk;
+        end
     end
- end
 
- always @ * begin
-    res <= ax;
- end
+    initial begin
+        $dumpfile("dump.vcd");
+        $dumpvars(0);
+        $monitor(" Entrada %b",entra);
+        $monitor(" Saida %b",sai);
 
- initial begin
-   $dumpfile("maquina_estados_tb.vcd");
-   $dumpvars(0, maquina_estados_tb);
-   $monitor("saida = %b", saida);
+        //estimulos:
+        entrada = 8'b10010000; #100; //passa pro 1
+        entrada = 8'b10100100; #100; //passa pro 2
+        entrada = 8'b10000010; #100; //passa pro 3
+        entrada = 8'b11000111; #100; //passa pro 4
+        entrada = 8'b10111010; #100; //passa pro 5
+        entrada = 8'b10001101; #100; //passa pro hora/c8
+        res = 1'b1; #100; //reseta
 
-    //estimulos:
-   entrada = 8'b10010000; #100; //passa pro 1
-   entrada = 8'b10100100; #100; //passa pro 2
-   entrada = 8'b10000010; #100; //passa pro 3
-   entrada = 8'b11000111; #100; //passa pro 4
-   entrada = 8'b10111010; #100; //passa pro 5
-   entrada = 8'b10001101; #100; //passa pro hora/c8
-   res = 1'b1; #100; //reseta
+        entrada = 8'b10111010; #100; //passa do inic pro 5
+        entrada = 8'b10101001; #100; //vai do 5 para mensagem falsa/c7
+        res = 1'b1; #100; //reseta
 
-   entrada = 8'b10111010; #100; //passa do inic pro 5
-   entrada = 8'b10101001; #100; //vai do 5 para mensagem falsa/c7
-   res = 1'b1; #100; //reseta
+        entrada = 8'b10100100; #100; //passa do inic pro 2
+        entrada = 8'b10101001; #100; //vai do 2 para mensagem falsa/c7
+        res = 1'b1; #100; //reseta
 
-   entrada = 8'b10100100; #100; //passa do inic pro 2
-   entrada = 8'b10101001; #100; //vai do 2 para mensagem falsa/c7
-   res = 1'b1; #100; //reseta
-
-   entrada = 8'b10100100; #100; //vai do inicio até o 2
-   entrada = 8'b11111111; #100; //passa para o acao/c6
+        entrada = 8'b10100100; #100; //vai do inicio até o 2
+        entrada = 8'b11111111; #100; //passa para o acao/c6
    
-   $finish;
- end
+        $finish;
 
+
+    end
 
 endmodule
