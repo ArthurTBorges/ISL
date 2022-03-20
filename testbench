@@ -1,53 +1,46 @@
 `include "maq_est.v"
 
-module maq_est_tb();
+module tp();
 
-    reg [7:0]entra_tb;
-    reg clk_tb,rst_tb;
-    wire [0:3]sai_tb;
+reg [7:0]entra;
+reg clk, rst;
+wire [0:3]sai;
+maq_est uut(.entra(entra),.clk(clk),.rst(rst),.sai(sai));
+initial begin
+    forever begin
+        clk = 0;
+        #5 clk = ~clk;
+    end
+end
+initial begin
+    $dumpfile("maq_est_tb.vcd");
+    $dumpvars(0);
+    $monitor("Entra %b sai %b",entra,sai);
     
-    maq_est maq_est_circuit(
-        .entra(entra_tb),
-        .clk(clk_tb),
-        .rst(rst_tb),
-        .sai(sai_tb)
-    );
-      
-    initial begin
-        forever begin
-            clk_tb = 0;
-              clk_tb = ~clk_tb;
-        end
-    end
-    initial begin
-        $dumpfile("dump.vcd");
-        $dumpvars(0);
-        $monitor("entra_tbda %b sai_tb %b",entra_tb,sai_tb);
+    //vai do primeiro ao quinto, e depois vai para o c8(hora)
+    entra=8'b10010000; #100;
+    entra=8'b10100100; #100;
+    entra=8'b10000010; #100;
+    entra=8'b11000111; #100;
+    entra=8'b10111010; #100;
+    entra=8'b10001101; #100;
+    rst= 1'b1;
 
-        //vai do primeiro ao quinto, e depois vai para o c8(hora)
-        entra_tb=8'b10010000; #100;
-        entra_tb=8'b10100100; #100;
-        entra_tb=8'b10000010; #100;
-        entra_tb=8'b11000111; #100;
-        entra_tb=8'b10111010; #100;
-        entra_tb=8'b10001101; #100;
-        rst_tb= 1'b1;
+    //vai do c3 para o c2, e do c2 para o c6(falso)  
+    rst= 1'b0; #100;
+    entra=8'b10000010; #100;
+    entra=8'b10100100; #100;
+    entra=8'b11111111; #100;
+    rst= 1'b1; #100; 
 
-        //vai do c3 para o c2, e do c2 para o c6(falso)  
-        rst_tb= 1'b0; #100;
-        entra_tb=8'b10000010; #100;
-        entra_tb=8'b10100100; #100;
-        entra_tb=8'b11111111; #100;
-        rst_tb= 1'b1; #100;
-
-        //vai do c3 para o c2, e do c2 para o c7(acao)
-        rst_tb= 1'b0; #100;
-        entra_tb=8'b10000010; #100;
-        entra_tb=8'b10100100; #100;
-        entra_tb=8'b10101001; #100;
-        rst_tb= 1'b1; #100;
-
-        $finish;
-    end
+    //vai do c3 para o c2, e do c2 para o c7(acao)
+    rst= 1'b0; #100;
+    entra=8'b10000010; #100;
+    entra=8'b10100100; #100;
+    entra=8'b10101001; #100;
+    rst= 1'b1; #100;
+    
+    $finish;
+end
 
 endmodule
